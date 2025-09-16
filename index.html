@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nordia POS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-green-600 mb-4">🍃 Nordia POS</h1>
+
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Productos -->
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="text-xl font-bold mb-4">Productos</h2>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="addItem('Café', 850)" class="p-4 bg-blue-500 text-white rounded">
+                        ☕ Café - $850
+                    </button>
+                    <button onclick="addItem('Medialunas', 450)" class="p-4 bg-blue-500 text-white rounded">
+                        🥐 Medialunas - $450
+                    </button>
+                    <button onclick="addItem('Tostado', 1200)" class="p-4 bg-blue-500 text-white rounded">
+                        🥪 Tostado - $1200
+                    </button>
+                    <button onclick="addItem('Jugo', 600)" class="p-4 bg-blue-500 text-white rounded">
+                        🥤 Jugo - $600
+                    </button>
+                </div>
+            </div>
+
+            <!-- Carrito -->
+            <div class="bg-white p-4 rounded shadow">
+                <h2 class="text-xl font-bold mb-4">Carrito</h2>
+                <div id="cart" class="mb-4 min-h-[200px] border p-2 rounded"></div>
+                <div class="text-2xl font-bold">Total: $<span id="total">0</span></div>
+                <button onclick="pay()" class="w-full mt-4 p-3 bg-green-600 text-white rounded text-xl">
+                    💳 COBRAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+
+        function addItem(name, price) {
+            cart.push({name, price});
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartEl = document.getElementById('cart');
+            const totalEl = document.getElementById('total');
+
+            if (cart.length === 0) {
+                cartEl.innerHTML = '<p class="text-gray-400">Vacío</p>';
+                totalEl.textContent = '0';
+                return;
+            }
+
+            cartEl.innerHTML = cart.map(item =>
+                `<div>${item.name} - ${item.price}</div>`
+            ).join('');
+
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            totalEl.textContent = total;
+        }
+
+        function pay() {
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            if (total > 0) {
+                alert(`Procesando pago de ${total}`);
+                cart = [];
+                updateCart();
+            }
+        }
+
+        updateCart();
+    </script>
+</body>
+</html>

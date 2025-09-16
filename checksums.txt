@@ -1,0 +1,31 @@
+# NORDIA DEPLOYMENT PACK - CHECKSUMS
+# Archivo de verificación de integridad
+# Generado automáticamente - No editar manualmente
+#
+# Para verificar integridad:
+# sha256sum -c checksums.txt
+#
+# Fecha de generación: 2025-09-16
+# Pack version: 1.0.0
+
+516e8ad2431247f6fd987467c7b76615378dfe3196934ea27a9b402b424043ed  02-development/backend-api.md
+224587ac970206a32acbd04ed68ebec5cdfa68f612d8deee18021f8c01e6b376  02-development/frontend-pos.md
+9d0c20edf35f3c1b56df0f3d46cf12189e83978a1930b8744dd39c98fbf1885f  04-production/docker-setup.md
+663e505e5ea68d207c268989783d6f08ea37595ddf0aad1b3411198b971c6f12  05-deployment/vps-setup.md
+eaad14cb7de5cea077f794b27b9e222f2e28f92a320616581a4b7a5c662ef5b1  01-setup/initial-setup.md
+4654890c3667d24f2d1535c4e689b31a67c3eb3bac02f708b62c243e6c92cae9  MASTER-PROMPT.md
+cfe23ea54d5ca08f3565b3ae38487548244217051b91de7ab1213527bdac8eaf  README.md
+
+# Archivos del deployment pack (total: 7 archivos)
+# Tamaño total estimado: ~46KB
+#
+# Orden de ejecución recomendado:
+# 1. MASTER-PROMPT.md (prompt principal)
+# 2. 01-setup/initial-setup.md (configuración)
+# 3. 02-development/backend-api.md (backend)
+# 4. 02-development/frontend-pos.md (frontend)
+# 5. 04-production/docker-setup.md (containerización)
+# 6. 05-deployment/vps-setup.md (deploy producción)
+#
+# Este pack contiene todo lo necesario para llevar
+# Nordia POS desde cero hasta producción en ~2 horas

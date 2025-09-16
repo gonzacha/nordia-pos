@@ -1,0 +1,92 @@
+{
+  "name": "Nordia Deployment Pack",
+  "version": "1.0.0",
+  "description": "Pack completo para deploy de Nordia POS desde cero hasta producción",
+  "created": "2025-09-16",
+  "total_files": 7,
+  "total_size": 46367,
+  "structure": {
+    "01-setup": {
+      "description": "Configuración inicial y dependencias",
+      "files": 1
+    },
+    "02-development": {
+      "description": "Código backend y frontend completo",
+      "files": 2
+    },
+    "04-production": {
+      "description": "Docker y configuración de producción",
+      "files": 1
+    },
+    "05-deployment": {
+      "description": "Deploy completo a VPS con SSL",
+      "files": 1
+    }
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "size": 1255,
+      "sha256": "cfe23ea54d5ca08f3565b3ae38487548244217051b91de7ab1213527bdac8eaf",
+      "description": "Guía general del deployment pack"
+    },
+    {
+      "path": "MASTER-PROMPT.md",
+      "size": 3118,
+      "sha256": "4654890c3667d24f2d1535c4e689b31a67c3eb3bac02f708b62c243e6c92cae9",
+      "description": "Prompt maestro con instrucciones completas"
+    },
+    {
+      "path": "01-setup/initial-setup.md",
+      "size": 3195,
+      "sha256": "eaad14cb7de5cea077f794b27b9e222f2e28f92a320616581a4b7a5c662ef5b1",
+      "description": "Setup inicial - ambiente de desarrollo y dependencias"
+    },
+    {
+      "path": "02-development/backend-api.md",
+      "size": 10497,
+      "sha256": "516e8ad2431247f6fd987467c7b76615378dfe3196934ea27a9b402b424043ed",
+      "description": "Backend completo FastAPI con MercadoPago y PostgreSQL"
+    },
+    {
+      "path": "02-development/frontend-pos.md",
+      "size": 13279,
+      "sha256": "224587ac970206a32acbd04ed68ebec5cdfa68f612d8deee18021f8c01e6b376",
+      "description": "Frontend completo Next.js con interfaz táctil para POS"
+    },
+    {
+      "path": "04-production/docker-setup.md",
+      "size": 7575,
+      "sha256": "9d0c20edf35f3c1b56df0f3d46cf12189e83978a1930b8744dd39c98fbf1885f",
+      "description": "Docker Compose y configuración de producción"
+    },
+    {
+      "path": "05-deployment/vps-setup.md",
+      "size": 7448,
+      "sha256": "663e505e5ea68d207c268989783d6f08ea37595ddf0aad1b3411198b971c6f12",
+      "description": "Deploy completo a VPS con SSL, dominio y backups"
+    }
+  ],
+  "execution_order": [
+    "MASTER-PROMPT.md",
+    "01-setup/initial-setup.md",
+    "02-development/backend-api.md",
+    "02-development/frontend-pos.md",
+    "04-production/docker-setup.md",
+    "05-deployment/vps-setup.md"
+  ],
+  "estimated_time": {
+    "setup": "15 minutos",
+    "development": "40 minutos",
+    "production": "20 minutos",
+    "deployment": "30 minutos",
+    "total": "~2 horas"
+  },
+  "requirements": {
+    "os": "Linux/macOS/Windows",
+    "python": "3.8+",
+    "node": "18+",
+    "docker": "20.10+",
+    "postgres": "13+"
+  }
+}
