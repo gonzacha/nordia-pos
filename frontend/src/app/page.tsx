@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { StockManager } from '@/components/modules/StockManager'
 import { BarcodeScanner } from '@/components/modules/BarcodeScanner'
 import { CashRegister } from '@/components/modules/CashRegister'
+import { api } from '@/lib/api'
 
 interface Product {
   id: number
@@ -62,7 +63,7 @@ export default function POSInterface() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:8003/api/products')
+      const response = await api.getProducts()
       const data = await response.json()
       setProducts(data)
     } catch (error) {
@@ -142,11 +143,7 @@ export default function POSInterface() {
     }
 
     try {
-      const response = await fetch('http://localhost:8003/api/sales', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(saleData)
-      })
+      const response = await api.createSale(saleData)
 
       if (response.ok) {
         const result = await response.json()
