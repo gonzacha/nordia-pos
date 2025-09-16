@@ -13,8 +13,8 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nordia POS - Enterprise Point of Sale System",
-  description: "Professional Point of Sale system with inventory management, barcode scanning, and payment processing",
+  title: "Nordia POS v3.0 - Enterprise Point of Sale System",
+  description: "Professional Point of Sale system with inventory management, barcode scanning, and payment processing - Updated",
 };
 
 export default function RootLayout({
