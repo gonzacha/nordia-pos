@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
+/* NORDIA POS v3.0 - CONTRASTE MEJORADO */
 :root {
+  --primary: #10B981;
+  --secondary: #2563EB;
+  --text-primary: #000000;
+  --text-secondary: #374151;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F3F4F6;
+  --border: #D1D5DB;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
 }
 
 @theme inline {
@@ -12,15 +22,76 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.card {
+  background: var(--bg-primary);
+  border: 2px solid var(--primary);
+  box-shadow: var(--shadow);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.3);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+/* Fix para texto gris */
+* {
+  color: var(--text-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+p, span, div {
+  color: var(--text-primary);
+}
+
+/* Dropzone styles */
+.dropzone {
+  transition: all 0.2s;
+}
+
+.dropzone:hover {
+  border-color: var(--primary);
+  background-color: var(--bg-secondary);
+}
+
+/* Module tabs */
+.module-tabs button {
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.module-tabs button:hover {
+  transform: translateY(-1px);
 }
