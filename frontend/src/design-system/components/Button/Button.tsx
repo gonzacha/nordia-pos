@@ -31,10 +31,15 @@ export const Button = ({
   disabled = false,
   onClick,
   type,
-  onDrag,
-  onDragEnd,
-  onDragStart,
-  ...restProps
+  form,
+  name,
+  value,
+  tabIndex,
+  'aria-label': ariaLabel,
+  'aria-describedby': ariaDescribedby,
+  'data-testid': dataTestId,
+  id,
+  ...motionProps
 }: ButtonProps) => {
   const variants = {
     primary: cn(
@@ -108,7 +113,14 @@ export const Button = ({
       disabled={disabled || loading}
       onClick={onClick}
       type={type}
-      {...restProps}
+      form={form}
+      name={name}
+      value={value}
+      tabIndex={tabIndex}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedby}
+      data-testid={dataTestId}
+      id={id}
     >
       {loading ? (
         <div className="flex items-center justify-center">
