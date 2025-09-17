@@ -9,7 +9,7 @@ import React, { forwardRef, useState } from 'react';
 import { cn } from '@/design-system/utils/cn';
 import { motion } from 'framer-motion';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;
   error?: string;
   success?: string;
