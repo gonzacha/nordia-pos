@@ -243,7 +243,7 @@ export const ProductGrid = ({
                   'hover:scale-105 active:scale-95'
                 )}
                 onClick={() => {
-                  const newCategory = category === 'Todas' ? '' : category;
+                  const newCategory = category === 'Todas' ? '' : category || '';
                   onCategoryChange?.(newCategory);
                 }}
               >
