@@ -7,9 +7,11 @@
 
 import React from 'react';
 import { cn } from '@/design-system/utils/cn';
-import { motion } from 'framer-motion';
+import { motion, type HTMLMotionProps } from 'framer-motion';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+type MotionButtonProps = Omit<HTMLMotionProps<'button'>, 'children'>;
+
+interface ButtonProps extends MotionButtonProps {
   variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'outline';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   fullWidth?: boolean;
@@ -122,6 +124,7 @@ export const Button = ({
       aria-describedby={ariaDescribedby}
       data-testid={dataTestId}
       id={id}
+      {...motionProps}
     >
       {loading ? (
         <div className="flex items-center justify-center">

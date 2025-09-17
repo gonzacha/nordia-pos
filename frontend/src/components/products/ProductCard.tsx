@@ -11,6 +11,7 @@ import { Package, AlertCircle, TrendingUp, Plus, Sparkles } from 'lucide-react';
 import { cn } from '@/design-system/utils/cn';
 import { Badge, StatusBadge } from '@/design-system/components';
 import { formatCurrency } from '@/design-system/utils/formatters';
+import { useResponsive } from '@/hooks/useResponsive';
 
 interface Product {
   id: number;
@@ -43,6 +44,35 @@ export const ProductCard = ({
   const isLowStock = product.stock > 0 && product.stock <= 5;
   const isOutOfStock = product.stock === 0;
   const hasDiscount = product.discount && product.discount > 0;
+  const { isMobile, touchTargetSize, isTouch } = useResponsive();
+  const addButtonSize = Math.max(touchTargetSize, 56);
+
+  const triggerHapticFeedback = React.useCallback(() => {
+    if (!isMobile || typeof window === 'undefined') return;
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate?.(16);
+    }
+  }, [isMobile]);
+
+  const handleAdd = React.useCallback(() => {
+    if (isOutOfStock) return;
+    triggerHapticFeedback();
+    onAddToCart(product);
+  }, [isOutOfStock, onAddToCart, product, triggerHapticFeedback]);
+
+  const stockText = isOutOfStock
+    ? 'Sin stock'
+    : isMobile
+    ? `Stock ${product.stock}`
+    : `Stock: ${product.stock} ${product.stock === 1 ? 'unidad' : 'unidades'}`;
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (isOutOfStock) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleAdd();
+    }
+  };
 
   // Colores dinámicos por categoría (inspirado en Mercado Pago)
   const categoryColors = {
@@ -62,15 +92,17 @@ export const ProductCard = ({
   if (variant === 'compact') {
     return (
       <motion.button
-        whileTap={{ scale: 0.95 }}
-        whileHover={{ scale: 1.02 }}
-        onClick={() => !isOutOfStock && onAddToCart(product)}
+        type="button"
+        whileTap={{ scale: isTouch ? 0.97 : 0.95 }}
+        whileHover={isTouch ? undefined : { scale: 1.02 }}
+        onClick={handleAdd}
         disabled={isOutOfStock}
         className={cn(
-          'relative p-3 rounded-xl border-2 transition-all duration-200',
-          'bg-white hover:shadow-medium focus:ring-4 focus:ring-brand/20',
+          'relative p-3 rounded-xl border-2 transition-all duration-200 select-none',
+          'bg-white focus:ring-4 focus:ring-brand/20 touch-manipulation',
+          isTouch ? 'active:shadow-medium' : 'hover:shadow-medium',
           isSelected ? 'border-brand bg-brand/5 shadow-soft' : 'border-neutral-200',
-          isOutOfStock ? 'opacity-50 cursor-not-allowed' : 'hover:border-brand',
+          isOutOfStock ? 'opacity-50 cursor-not-allowed' : 'focus:border-brand',
         )}
       >
         <div className="flex items-center justify-between">
@@ -110,7 +142,7 @@ export const ProductCard = ({
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        whileHover={{ x: 4 }}
+        whileHover={isTouch ? undefined : { x: 4 }}
         className={cn(
           'group flex items-center p-4 bg-white rounded-xl',
           'shadow-soft hover:shadow-medium transition-all duration-200',
@@ -179,16 +211,19 @@ export const ProductCard = ({
         {/* Botón de acción */}
         {showQuickActions && (
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            type="button"
+            style={{ width: addButtonSize, height: addButtonSize }}
+            aria-label="Agregar al carrito"
+            whileHover={isTouch ? undefined : { scale: 1.05 }}
+            whileTap={{ scale: isTouch ? 0.94 : 0.9 }}
             onClick={(e) => {
               e.stopPropagation();
-              !isOutOfStock && onAddToCart(product);
+              handleAdd();
             }}
             disabled={isOutOfStock}
             className={cn(
-              'ml-4 w-10 h-10 rounded-full flex items-center justify-center',
-              'transition-all duration-200 shadow-soft hover:shadow-medium',
+              'ml-4 rounded-full flex items-center justify-center transition-all duration-200 touch-manipulation select-none',
+              'shadow-soft',
               isOutOfStock
                 ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
                 : 'bg-brand text-white hover:bg-brand-dark'
@@ -202,30 +237,46 @@ export const ProductCard = ({
   }
 
   // Variante grid (default) - La estrella del show
+  const hoverAnimation = !isTouch ? { y: -4, transition: { duration: 0.2 } } : undefined;
+  const shimmerEnabled = !isTouch;
+  const cardClassName = cn(
+    'group relative rounded-2xl border border-neutral-100 bg-white shadow-soft transition-all duration-300 select-none overflow-hidden',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+    isSelected && (isMobile ? 'border-brand bg-brand/5 ring-1 ring-brand/40' : 'ring-2 ring-brand shadow-medium'),
+    isOutOfStock ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+    isMobile ? 'p-3 touch-manipulation' : ''
+  );
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: isMobile ? 10 : 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      whileTap={{ scale: 0.98 }}
-      className={cn(
-        'group relative bg-white rounded-2xl overflow-hidden',
-        'shadow-soft hover:shadow-large transition-all duration-300',
-        'cursor-pointer border border-neutral-100 hover:border-brand/30',
-        isSelected && 'ring-2 ring-brand shadow-medium'
-      )}
-      onClick={() => !isOutOfStock && onAddToCart(product)}
+      whileHover={hoverAnimation}
+      whileTap={{ scale: isTouch ? 0.97 : 0.98 }}
+      className={cardClassName}
+      onClick={handleAdd}
+      role="button"
+      tabIndex={isOutOfStock ? -1 : 0}
+      aria-disabled={isOutOfStock}
+      onKeyDown={handleKeyDown}
+      style={{ touchAction: 'manipulation', willChange: 'transform' }}
     >
       {/* Header con imagen/gradiente */}
-      <div className={cn(
-        'relative h-32 bg-gradient-to-br overflow-hidden',
-        getCategoryColor()
-      )}>
+      <div
+        className={cn(
+          'relative bg-gradient-to-br overflow-hidden rounded-[18px]',
+          isMobile ? 'aspect-square' : 'h-32',
+          getCategoryColor()
+        )}
+      >
         {product.image ? (
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            className={cn(
+              'w-full h-full object-cover',
+              !isTouch && 'transition-transform duration-300 group-hover:scale-110'
+            )}
           />
         ) : (
           <div className="flex items-center justify-center h-full">
@@ -234,31 +285,60 @@ export const ProductCard = ({
         )}
 
         {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
 
         {/* Badges de estado */}
-        <div className="absolute top-2 right-2 space-y-1">
-          {product.trending && (
-            <Badge variant="success" size="sm" className="animate-pulse">
-              <TrendingUp className="w-3 h-3 mr-1" />
-              Popular
-            </Badge>
+        <div
+          className={cn(
+            'absolute top-2 right-2 flex flex-col gap-1',
+            isMobile && 'top-2 left-2 right-auto items-start'
           )}
-          {isLowStock && (
-            <Badge variant="warning" size="sm">
-              <AlertCircle className="w-3 h-3 mr-1" />
-              Bajo stock
-            </Badge>
-          )}
-          {hasDiscount && (
-            <Badge variant="danger" size="sm" className="font-bold">
-              -{product.discount}%
-            </Badge>
+        >
+          {isMobile ? (
+            <>
+              {product.trending && (
+                <span className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                  <TrendingUp className="w-3 h-3" />
+                  Popular
+                </span>
+              )}
+              {isLowStock && (
+                <span className="flex items-center gap-1 rounded-full bg-warning/90 px-2 py-1 text-[11px] font-semibold text-neutral-900">
+                  <AlertCircle className="w-3 h-3" />
+                  Bajo stock
+                </span>
+              )}
+              {!product.trending && !isLowStock && hasDiscount && (
+                <span className="flex items-center gap-1 rounded-full bg-danger/90 px-2 py-1 text-[11px] font-semibold text-white">
+                  -{product.discount}%
+                </span>
+              )}
+            </>
+          ) : (
+            <>
+              {product.trending && (
+                <Badge variant="success" size="sm" className="animate-pulse">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  Popular
+                </Badge>
+              )}
+              {isLowStock && (
+                <Badge variant="warning" size="sm">
+                  <AlertCircle className="w-3 h-3 mr-1" />
+                  Bajo stock
+                </Badge>
+              )}
+              {hasDiscount && (
+                <Badge variant="danger" size="sm" className="font-bold">
+                  -{product.discount}%
+                </Badge>
+              )}
+            </>
           )}
         </div>
 
         {/* Categoría */}
-        {product.category && (
+        {product.category && !isMobile && (
           <div className="absolute bottom-2 left-2">
             <span className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-medium text-neutral-700">
               {product.category}
@@ -268,16 +348,20 @@ export const ProductCard = ({
       </div>
 
       {/* Contenido principal */}
-      <div className="p-4">
-        <h3 className="font-semibold text-neutral-900 mb-2 line-clamp-1 group-hover:text-brand transition-colors">
+      <div className={cn('p-4', isMobile && 'p-3')}>
+        <h3 className={cn(
+          'font-semibold text-neutral-900 mb-2 line-clamp-1 transition-colors',
+          !isTouch && 'group-hover:text-brand',
+          isMobile && 'text-base mb-1'
+        )}>
           {product.name}
         </h3>
 
         {/* Precio con descuento */}
-        <div className="flex items-end gap-2 mb-3">
+        <div className={cn('flex items-end gap-2 mb-3', isMobile && 'mb-2')}>
           {hasDiscount ? (
             <>
-              <span className="text-xl font-bold text-brand">
+              <span className={cn('font-bold text-brand', isMobile ? 'text-lg' : 'text-xl')}>
                 {formatCurrency(product.price * (1 - product.discount! / 100))}
               </span>
               <span className="text-sm text-neutral-400 line-through">
@@ -285,8 +369,14 @@ export const ProductCard = ({
               </span>
             </>
           ) : (
-            <span className="text-xl font-bold text-brand">
+            <span className={cn('font-bold text-brand', isMobile ? 'text-lg' : 'text-xl')}>
               {formatCurrency(product.price)}
+            </span>
+          )}
+
+          {hasDiscount && isMobile && (
+            <span className="ml-auto rounded-full bg-brand/10 px-2 py-0.5 text-[11px] font-semibold text-brand">
+              -{product.discount}%
             </span>
           )}
         </div>
@@ -296,11 +386,12 @@ export const ProductCard = ({
           <span className={cn(
             'font-medium',
             isLowStock && 'text-warning',
-            isOutOfStock && 'text-danger'
+            isOutOfStock && 'text-danger',
+            isMobile && 'text-[11px]'
           )}>
-            Stock: {product.stock} {product.stock === 1 ? 'unidad' : 'unidades'}
+            {stockText}
           </span>
-          {product.barcode && (
+          {!isMobile && product.barcode && (
             <span className="font-mono text-neutral-400">
               {product.barcode.slice(-6)}
             </span>
@@ -311,21 +402,25 @@ export const ProductCard = ({
       {/* Botón flotante de acción */}
       {showQuickActions && (
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          type="button"
+          style={{ width: addButtonSize, height: addButtonSize }}
           className={cn(
-            'absolute bottom-3 right-3 w-11 h-11 rounded-full shadow-medium',
-            'flex items-center justify-center transition-all duration-200',
-            'opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0',
+            'absolute bottom-3 right-3 flex items-center justify-center rounded-[16px] shadow-medium transition-all duration-200 touch-manipulation',
             isOutOfStock
               ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
-              : 'bg-brand text-white hover:bg-brand-dark hover:shadow-large'
+              : 'bg-brand text-white hover:bg-brand-dark',
+            shimmerEnabled
+              ? 'opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0'
+              : 'opacity-100'
           )}
+          whileHover={isTouch ? undefined : { scale: 1.05 }}
+          whileTap={{ scale: isTouch ? 0.92 : 0.94 }}
           onClick={(e) => {
             e.stopPropagation();
-            !isOutOfStock && onAddToCart(product);
+            handleAdd();
           }}
           disabled={isOutOfStock}
+          aria-label="Agregar al carrito"
         >
           <Plus className="w-5 h-5" />
         </motion.button>
@@ -344,10 +439,12 @@ export const ProductCard = ({
         </motion.div>
       )}
 
-      {/* Efecto shimmer sutil en hover */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-      </div>
+      {/* Efecto shimmer sutil en hover (sólo desktop) */}
+      {shimmerEnabled && (
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+        </div>
+      )}
     </motion.div>
   );
 };

@@ -7,9 +7,11 @@
 
 import React, { forwardRef, useState } from 'react';
 import { cn } from '@/design-system/utils/cn';
-import { motion } from 'framer-motion';
+import { motion, type HTMLMotionProps } from 'framer-motion';
 
-interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+type MotionInputProps = Omit<HTMLMotionProps<'input'>, 'size'>;
+
+interface InputProps extends MotionInputProps {
   label?: string;
   error?: string;
   success?: string;
