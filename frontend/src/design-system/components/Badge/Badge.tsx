@@ -19,6 +19,7 @@ interface BadgeProps {
   children: React.ReactNode;
   className?: string;
   onRemove?: () => void;
+  onClick?: () => void;
 }
 
 export const Badge = ({
@@ -31,6 +32,7 @@ export const Badge = ({
   children,
   className,
   onRemove,
+  onClick,
 }: BadgeProps) => {
   const variants = {
     default: 'bg-neutral-100 text-neutral-700 border border-neutral-200',
@@ -136,6 +138,7 @@ export const Badge = ({
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.8, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      onClick={onClick}
       className={cn(
         // Base styles
         'inline-flex items-center font-medium rounded-full',
@@ -144,6 +147,8 @@ export const Badge = ({
         variants[variant],
         // Size styles
         sizes[size],
+        // Clickable styles
+        onClick && 'cursor-pointer hover:scale-105 active:scale-95',
         // Custom className
         className
       )}
