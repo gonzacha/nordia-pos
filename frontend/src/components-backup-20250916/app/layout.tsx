@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
-import { ToastProvider } from "@/design-system/components";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,21 +14,7 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: "Nordia POS v3.0 - Enterprise Point of Sale System",
-  description: "Professional Point of Sale system with inventory management, barcode scanning, and payment processing - Mobile-first responsive design",
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: 'cover'
-  },
-  themeColor: '#10B981',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Nordia POS'
-  },
-  manifest: '/manifest.json'
+  description: "Professional Point of Sale system with inventory management, barcode scanning, and payment processing - Updated",
 };
 
 export default function RootLayout({
@@ -43,7 +28,6 @@ export default function RootLayout({
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
         {children}
-        <ToastProvider />
       </body>
     </html>
   );

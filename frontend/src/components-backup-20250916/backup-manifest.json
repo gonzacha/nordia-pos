@@ -1,0 +1,97 @@
+{
+  "backupDate": "2025-09-16T23:19:00Z",
+  "version": "3.0-original",
+  "reason": "Pre-transformación UI/UX suprema hacia nivel Mercado Pago/Ualá",
+  "files": [
+    {
+      "original": "/src/app/page.tsx",
+      "backup": "/src/components-backup-20250916/app/page.tsx",
+      "size": "15.4KB",
+      "lines": 426,
+      "type": "main-component",
+      "critical": true
+    },
+    {
+      "original": "/src/app/layout.tsx",
+      "backup": "/src/components-backup-20250916/app/layout.tsx",
+      "size": "0.8KB",
+      "lines": 35,
+      "type": "layout",
+      "critical": true
+    },
+    {
+      "original": "/src/app/globals.css",
+      "backup": "/src/components-backup-20250916/app/globals.css",
+      "size": "9.8KB",
+      "lines": 436,
+      "type": "styles",
+      "critical": true
+    },
+    {
+      "original": "/src/components/modules/StockManager.tsx",
+      "backup": "/src/components-backup-20250916/modules/StockManager.tsx",
+      "size": "4.8KB",
+      "lines": 150,
+      "type": "module",
+      "critical": true,
+      "functionality": "F3"
+    },
+    {
+      "original": "/src/components/modules/BarcodeScanner.tsx",
+      "backup": "/src/components-backup-20250916/modules/BarcodeScanner.tsx",
+      "size": "3.1KB",
+      "lines": 98,
+      "type": "module",
+      "critical": true,
+      "functionality": "F11"
+    },
+    {
+      "original": "/src/components/modules/CashRegister.tsx",
+      "backup": "/src/components-backup-20250916/modules/CashRegister.tsx",
+      "size": "6.6KB",
+      "lines": 187,
+      "type": "module",
+      "critical": true,
+      "functionality": "F8"
+    },
+    {
+      "original": "/src/lib/api.ts",
+      "backup": "/src/components-backup-20250916/lib/api.ts",
+      "size": "2.0KB",
+      "lines": 69,
+      "type": "utility",
+      "critical": true
+    }
+  ],
+  "totalFiles": 7,
+  "totalLines": 1401,
+  "totalSize": "42.5KB",
+  "functionalityPreserved": [
+    "F1 - Sales Interface",
+    "F3 - Stock Manager",
+    "F8 - Cash Register",
+    "F11 - Barcode Scanner",
+    "API Integration",
+    "Payment Processing",
+    "Keyboard Shortcuts",
+    "Enterprise CSS System"
+  ],
+  "restoreInstructions": {
+    "script": "npm run restore-backup 20250916",
+    "manual": "Copy files from /components-backup-20250916 back to /src",
+    "verification": [
+      "Test F1 Sales functionality",
+      "Test F3 Stock management",
+      "Test F8 Cash register",
+      "Test F11 Barcode scanner",
+      "Verify API connection",
+      "Check all keyboard shortcuts"
+    ]
+  },
+  "transformationPlan": {
+    "nextPrompt": "prompt-003-setup-design-system.md",
+    "targetUI": "Mercado Pago / Ualá level",
+    "approach": "Incremental component-by-component",
+    "rollbackSafety": "100% - All original code preserved"
+  }
+}
