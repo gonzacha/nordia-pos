@@ -12,16 +12,18 @@ import { Skeleton } from '@/design-system/components';
 interface ProductSkeletonProps {
   variant?: 'grid' | 'list' | 'compact';
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export const ProductSkeleton = ({
   variant = 'grid',
   className,
+  style,
 }: ProductSkeletonProps) => {
   // Variante compacta
   if (variant === 'compact') {
     return (
-      <div className={cn('p-3 bg-white rounded-xl border border-neutral-200', className)}>
+      <div className={cn('p-3 bg-white rounded-xl border border-neutral-200', className)} style={style}>
         <div className="flex items-center justify-between">
           <div className="flex-1 space-y-2">
             <Skeleton variant="text" width="70%" height="14px" />
@@ -39,7 +41,7 @@ export const ProductSkeleton = ({
       <div className={cn(
         'flex items-center p-4 bg-white rounded-xl border border-neutral-100 shadow-soft',
         className
-      )}>
+      )} style={style}>
         {/* Imagen/Ícono skeleton */}
         <Skeleton variant="rounded" width="64px" height="64px" className="flex-shrink-0" />
 
@@ -71,7 +73,7 @@ export const ProductSkeleton = ({
     <div className={cn(
       'bg-white rounded-2xl overflow-hidden shadow-soft border border-neutral-100',
       className
-    )}>
+    )} style={style}>
       {/* Header con gradiente */}
       <div className="relative h-32">
         <Skeleton
