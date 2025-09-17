@@ -9,7 +9,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Package, AlertCircle, TrendingUp, Plus, Sparkles } from 'lucide-react';
 import { cn } from '@/design-system/utils/cn';
-import { Badge, StatusBadge } from '@/design-system/components';
+import { Badge, Button, StatusBadge } from '@/design-system/components';
 import { formatCurrency } from '@/design-system/utils/formatters';
 import { useResponsive } from '@/hooks/useResponsive';
 
@@ -236,215 +236,125 @@ export const ProductCard = ({
     );
   }
 
-  // Variante grid (default) - La estrella del show
-  const hoverAnimation = !isTouch ? { y: -4, transition: { duration: 0.2 } } : undefined;
-  const shimmerEnabled = !isTouch;
-  const cardClassName = cn(
-    'group relative rounded-2xl border border-neutral-100 bg-white shadow-soft transition-all duration-300 select-none overflow-hidden',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
-    isSelected && (isMobile ? 'border-brand bg-brand/5 ring-1 ring-brand/40' : 'ring-2 ring-brand shadow-medium'),
-    isOutOfStock ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
-    isMobile ? 'p-3 touch-manipulation' : ''
+  // Variante grid (default)
+  const hoverAnimation = !isTouch ? { y: -4, transition: { duration: 0.18 } } : undefined;
+
+  const priceBlock = hasDiscount ? (
+    <div className="flex items-baseline gap-1">
+      <span className="text-lg font-semibold text-brand">
+        {formatCurrency(product.price * (1 - product.discount! / 100))}
+      </span>
+      <span className="text-xs text-neutral-400 line-through">
+        {formatCurrency(product.price)}
+      </span>
+    </div>
+  ) : (
+    <span className="text-lg font-semibold text-brand">
+      {formatCurrency(product.price)}
+    </span>
   );
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: isMobile ? 10 : 20 }}
+    <motion.article
+      initial={{ opacity: 0, y: isMobile ? 8 : 12 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={hoverAnimation}
-      whileTap={{ scale: isTouch ? 0.97 : 0.98 }}
-      className={cardClassName}
+      whileTap={{ scale: isTouch ? 0.97 : 0.99 }}
+      className={cn(
+        'group relative flex flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-shadow duration-200',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+        isSelected && 'border-brand shadow-medium',
+        isOutOfStock ? 'opacity-60' : 'hover:shadow-soft'
+      )}
       onClick={handleAdd}
       role="button"
       tabIndex={isOutOfStock ? -1 : 0}
       aria-disabled={isOutOfStock}
       onKeyDown={handleKeyDown}
-      style={{ touchAction: 'manipulation', willChange: 'transform' }}
     >
-      {/* Header con imagen/gradiente */}
-      <div
-        className={cn(
-          'relative bg-gradient-to-br overflow-hidden rounded-[18px]',
-          isMobile ? 'aspect-square' : 'h-32',
-          getCategoryColor()
-        )}
-      >
+      <div className="relative aspect-square w-full overflow-hidden bg-neutral-100">
         {product.image ? (
           <img
             src={product.image}
             alt={product.name}
-            className={cn(
-              'w-full h-full object-cover',
-              !isTouch && 'transition-transform duration-300 group-hover:scale-110'
-            )}
+            className="h-full w-full object-cover"
+            loading="lazy"
           />
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <Package className="w-12 h-12 text-white/50" />
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand to-brand-dark">
+            <Package className="h-10 w-10 text-white/70" />
           </div>
         )}
 
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
-
-        {/* Badges de estado */}
-        <div
-          className={cn(
-            'absolute top-2 right-2 flex flex-col gap-1',
-            isMobile && 'top-2 left-2 right-auto items-start'
+        <div className="absolute inset-x-2 top-2 flex flex-wrap gap-1 text-xs">
+          {product.trending && (
+            <span className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white backdrop-blur-sm">
+              <TrendingUp className="h-3 w-3" />Popular
+            </span>
           )}
-        >
-          {isMobile ? (
-            <>
-              {product.trending && (
-                <span className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                  <TrendingUp className="w-3 h-3" />
-                  Popular
-                </span>
-              )}
-              {isLowStock && (
-                <span className="flex items-center gap-1 rounded-full bg-warning/90 px-2 py-1 text-[11px] font-semibold text-neutral-900">
-                  <AlertCircle className="w-3 h-3" />
-                  Bajo stock
-                </span>
-              )}
-              {!product.trending && !isLowStock && hasDiscount && (
-                <span className="flex items-center gap-1 rounded-full bg-danger/90 px-2 py-1 text-[11px] font-semibold text-white">
-                  -{product.discount}%
-                </span>
-              )}
-            </>
-          ) : (
-            <>
-              {product.trending && (
-                <Badge variant="success" size="sm" className="animate-pulse">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  Popular
-                </Badge>
-              )}
-              {isLowStock && (
-                <Badge variant="warning" size="sm">
-                  <AlertCircle className="w-3 h-3 mr-1" />
-                  Bajo stock
-                </Badge>
-              )}
-              {hasDiscount && (
-                <Badge variant="danger" size="sm" className="font-bold">
-                  -{product.discount}%
-                </Badge>
-              )}
-            </>
+          {isLowStock && (
+            <span className="flex items-center gap-1 rounded-full bg-warning px-2 py-1 text-neutral-900">
+              <AlertCircle className="h-3 w-3" />Bajo stock
+            </span>
+          )}
+          {hasDiscount && !isLowStock && !product.trending && (
+            <span className="rounded-full bg-danger px-2 py-1 text-white">-{product.discount}%</span>
           )}
         </div>
 
-        {/* Categoría */}
-        {product.category && !isMobile && (
-          <div className="absolute bottom-2 left-2">
-            <span className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-xs font-medium text-neutral-700">
-              {product.category}
-            </span>
+        {isOutOfStock && (
+          <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/60 text-sm font-medium text-white">
+            Sin stock
           </div>
         )}
       </div>
 
-      {/* Contenido principal */}
-      <div className={cn('p-4', isMobile && 'p-3')}>
-        <h3 className={cn(
-          'font-semibold text-neutral-900 mb-2 line-clamp-1 transition-colors',
-          !isTouch && 'group-hover:text-brand',
-          isMobile && 'text-base mb-1'
-        )}>
-          {product.name}
-        </h3>
-
-        {/* Precio con descuento */}
-        <div className={cn('flex items-end gap-2 mb-3', isMobile && 'mb-2')}>
-          {hasDiscount ? (
-            <>
-              <span className={cn('font-bold text-brand', isMobile ? 'text-lg' : 'text-xl')}>
-                {formatCurrency(product.price * (1 - product.discount! / 100))}
-              </span>
-              <span className="text-sm text-neutral-400 line-through">
-                {formatCurrency(product.price)}
-              </span>
-            </>
-          ) : (
-            <span className={cn('font-bold text-brand', isMobile ? 'text-lg' : 'text-xl')}>
-              {formatCurrency(product.price)}
-            </span>
+      <div className="flex flex-1 flex-col gap-3 p-3">
+        <div className="space-y-1">
+          <h3 className="line-clamp-2 text-sm font-semibold text-neutral-900">
+            {product.name}
+          </h3>
+          {product.category && (
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+              {product.category}
+            </p>
           )}
+        </div>
 
+        <div className="flex items-center justify-between">
+          {priceBlock}
           {hasDiscount && isMobile && (
-            <span className="ml-auto rounded-full bg-brand/10 px-2 py-0.5 text-[11px] font-semibold text-brand">
-              -{product.discount}%
+            <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[11px] font-semibold text-brand">
+              Ahorro {product.discount}%
             </span>
           )}
         </div>
 
-        {/* Info adicional */}
-        <div className="flex items-center justify-between text-xs text-neutral-500">
-          <span className={cn(
-            'font-medium',
-            isLowStock && 'text-warning',
-            isOutOfStock && 'text-danger',
-            isMobile && 'text-[11px]'
-          )}>
+        <div className="mt-auto flex items-center justify-between text-xs text-neutral-500">
+          <span className={cn('font-medium', isLowStock && 'text-warning', isOutOfStock && 'text-danger')}>
             {stockText}
           </span>
           {!isMobile && product.barcode && (
-            <span className="font-mono text-neutral-400">
-              {product.barcode.slice(-6)}
-            </span>
+            <span className="font-mono text-neutral-400">{product.barcode.slice(-6)}</span>
           )}
         </div>
+
+        {showQuickActions && (
+          <Button
+            type="button"
+            size="sm"
+            disabled={isOutOfStock}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleAdd();
+            }}
+            className="mt-1 w-full justify-center rounded-xl py-2 text-sm font-semibold"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Agregar
+          </Button>
+        )}
       </div>
-
-      {/* Botón flotante de acción */}
-      {showQuickActions && (
-        <motion.button
-          type="button"
-          style={{ width: addButtonSize, height: addButtonSize }}
-          className={cn(
-            'absolute bottom-3 right-3 flex items-center justify-center rounded-[16px] shadow-medium transition-all duration-200 touch-manipulation',
-            isOutOfStock
-              ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
-              : 'bg-brand text-white hover:bg-brand-dark',
-            shimmerEnabled
-              ? 'opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0'
-              : 'opacity-100'
-          )}
-          whileHover={isTouch ? undefined : { scale: 1.05 }}
-          whileTap={{ scale: isTouch ? 0.92 : 0.94 }}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleAdd();
-          }}
-          disabled={isOutOfStock}
-          aria-label="Agregar al carrito"
-        >
-          <Plus className="w-5 h-5" />
-        </motion.button>
-      )}
-
-      {/* Overlay para productos sin stock */}
-      {isOutOfStock && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm flex items-center justify-center rounded-2xl"
-        >
-          <div className="bg-white px-4 py-2 rounded-xl shadow-medium">
-            <span className="font-semibold text-neutral-900">Sin Stock</span>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Efecto shimmer sutil en hover (sólo desktop) */}
-      {shimmerEnabled && (
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-        </div>
-      )}
-    </motion.div>
+    </motion.article>
   );
+
 };
