@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/design-system/components";
@@ -14,22 +14,17 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nordia POS v3.0 - Enterprise Point of Sale System",
-  description: "Professional Point of Sale system with inventory management, barcode scanning, and payment processing - Mobile-first responsive design",
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: 'cover'
-  },
-  themeColor: '#10B981',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Nordia POS'
-  },
-  manifest: '/manifest.json'
+  title: "Nordia POS",
+  description: "POS mobile-first para PyMEs",
+  manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#111827",
+  colorScheme: "light",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -38,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
