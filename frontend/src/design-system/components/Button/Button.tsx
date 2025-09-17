@@ -29,7 +29,12 @@ export const Button = ({
   children,
   className,
   disabled = false,
-  ...buttonProps
+  onClick,
+  type,
+  onDrag,
+  onDragEnd,
+  onDragStart,
+  ...restProps
 }: ButtonProps) => {
   const variants = {
     primary: cn(
@@ -101,7 +106,9 @@ export const Button = ({
         className
       )}
       disabled={disabled || loading}
-      {...buttonProps}
+      onClick={onClick}
+      type={type}
+      {...restProps}
     >
       {loading ? (
         <div className="flex items-center justify-center">
