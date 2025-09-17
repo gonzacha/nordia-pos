@@ -29,7 +29,7 @@ export const Button = ({
   children,
   className,
   disabled = false,
-  ...props
+  ...buttonProps
 }: ButtonProps) => {
   const variants = {
     primary: cn(
@@ -101,7 +101,7 @@ export const Button = ({
         className
       )}
       disabled={disabled || loading}
-      {...props}
+      {...buttonProps}
     >
       {loading ? (
         <div className="flex items-center justify-center">
