@@ -130,7 +130,8 @@ export function getTouchTargetSize(deviceType?: DeviceType): number {
  */
 export function supportsFeature(feature: string, deviceType?: DeviceType): boolean {
   const device = deviceType || getDeviceType()
-  return DEVICE_PROFILES[device].features.includes(feature as any)
+  const features = DEVICE_PROFILES[device].features as readonly string[]
+  return features.includes(feature)
 }
 
 /**
