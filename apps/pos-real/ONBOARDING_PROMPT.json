@@ -1,0 +1,92 @@
+{
+  "proyecto": "Nordia POS",
+  "descripcion": "Sistema POS mobile-first para carnicerías argentinas",
+  "stack": {
+    "framework": "Next.js 15 (App Router)",
+    "state": "Zustand con persist middleware",
+    "ui": "Tailwind CSS + Vaul (drawers) + Radix UI",
+    "lenguaje": "TypeScript"
+  },
+  "estructura_archivos": {
+    "src/app/": "App Router pages",
+    "src/app/login/page.tsx": "Login con PIN keypad",
+    "src/app/app/": "Rutas protegidas del POS",
+    "src/app/app/layout.tsx": "Layout con ProtectedRoute, sidebar, bottom nav",
+    "src/app/app/sell/page.tsx": "Pantalla principal de ventas",
+    "src/app/app/settings/page.tsx": "Config (solo admin)",
+    "src/components/auth/": "Componentes de autenticación",
+    "src/components/auth/ProtectedRoute.tsx": "HOC para proteger rutas",
+    "src/components/sell/": "Componentes de la pantalla de ventas",
+    "src/components/sell/MobileHeader.tsx": "Header con user dropdown",
+    "src/components/sell/SearchBar.tsx": "Búsqueda de productos",
+    "src/components/sell/ProductSearchResult.tsx": "Resultados de búsqueda",
+    "src/components/sell/CartSheet.tsx": "Drawer del carrito",
+    "src/components/sell/QuantitySheet.tsx": "Drawer para cantidad/peso",
+    "src/components/sell/ScanButton.tsx": "Botón de escaneo",
+    "src/lib/store.ts": "Zustand store principal (productos, carrito)",
+    "src/lib/authStore.ts": "Zustand store de autenticación",
+    "src/types/auth.ts": "Tipos de auth (User, Role, Permission)"
+  },
+  "sistema_auth": {
+    "metodo": "PIN de 4 dígitos",
+    "usuarios_demo": [
+      { "nombre": "Dueño", "pin": "1234", "rol": "admin" },
+      { "nombre": "Cajero 1", "pin": "0000", "rol": "cashier" }
+    ],
+    "permisos": {
+      "admin": ["sell", "view_products", "create_product", "edit_product", "delete_product", "view_stock", "manage_stock", "view_reports", "view_costs", "manage_users", "settings"],
+      "cashier": ["sell", "view_products", "view_stock"]
+    },
+    "persistencia": "localStorage (nordia-auth, nordia-users)",
+    "preparado_para": "Supabase (estructura compatible)"
+  },
+  "features_implementadas": [
+    "Login con PIN keypad (touch + teclado físico)",
+    "Auto-submit al completar 4 dígitos",
+    "Shake animation en error de PIN",
+    "Protección de rutas con ProtectedRoute",
+    "Permisos por rol (admin vs cashier)",
+    "Settings oculto para cajeros (dropdown, sidebar, bottom nav, página)",
+    "MobileHeader con user info y logout",
+    "Búsqueda fuzzy de productos",
+    "Carrito con drawer (bottom sheet)",
+    "Selector de cantidad/peso con quick buttons",
+    "Productos por peso (kg) y unidad"
+  ],
+  "colores_tailwind": {
+    "nordia-primary": "#1a1a2e",
+    "nordia-accent": "#f59e0b",
+    "nordia-success": "#10b981",
+    "nordia-danger": "#ef4444",
+    "nordia-surface": "#f8fafc",
+    "nordia-card": "#ffffff"
+  },
+  "animaciones_tailwind": [
+    "animate-shake",
+    "animate-fade-in",
+    "animate-slide-up",
+    "animate-scale-in",
+    "animate-bounce-subtle"
+  ],
+  "comandos": {
+    "dev": "pnpm dev",
+    "build": "pnpm build",
+    "directorio": "/home/nordia/Documentos/nordia-suite/apps/pos-real"
+  },
+  "pendiente_implementar": [
+    "Integración Supabase para auth real",
+    "CRUD de productos completo",
+    "Checkout y métodos de pago",
+    "Impresión de tickets",
+    "Reportes y estadísticas",
+    "Gestión de stock",
+    "Facturación AFIP"
+  ],
+  "notas_importantes": [
+    "Mobile-first design",
+    "Sin framer-motion (se removió por errores de hidratación)",
+    "Vaul se usa para todos los drawers/bottom sheets",
+    "El layout de /app/* ya tiene ProtectedRoute wrapping todo",
+    "checkPermission() del authStore para verificar permisos"
+  ]
+}

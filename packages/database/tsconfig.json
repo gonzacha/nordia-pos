@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ES2022"
+  },
+  "include": ["*.ts", "schema.prisma"],
+  "exclude": ["node_modules"]
+}
