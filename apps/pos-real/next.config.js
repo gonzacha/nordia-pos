@@ -8,6 +8,7 @@ const withPWA = require('next-pwa')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  turbopack: {},
   transpilePackages: ["@nordia/ui", "@nordia/config"],
   reactStrictMode: true,
 }
