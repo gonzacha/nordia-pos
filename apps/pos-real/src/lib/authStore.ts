@@ -50,6 +50,17 @@ export const useAuthStore = create<AuthStore>()(
 
       // Login con PIN usando Supabase
       login: async (pin: string) => {
+        // Validar que el PIN tenga exactamente 4 digitos
+        if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+          set({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: 'El PIN debe tener exactamente 4 digitos'
+          })
+          return false
+        }
+
         set({ isLoading: true, error: null })
 
         try {

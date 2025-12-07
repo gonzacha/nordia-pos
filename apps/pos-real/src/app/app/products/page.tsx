@@ -26,15 +26,28 @@ export default function ProductsPage() {
       return
     }
 
+    const precio = parseFloat(productForm.price)
+    const costo = productForm.cost ? parseFloat(productForm.cost) : 0
+
+    // Validar que no sean negativos
+    if (precio < 0) {
+      alert("El precio no puede ser negativo")
+      return
+    }
+    if (costo < 0) {
+      alert("El costo no puede ser negativo")
+      return
+    }
+
     addProduct({
       name: productForm.name,
       plu: String(products.length + 1).padStart(5, '0'), // Auto-generate PLU
       category: productForm.category,
       unit: productForm.unit,
-      price: parseFloat(productForm.price),
-      cost: productForm.cost ? parseFloat(productForm.cost) : undefined,
+      price: precio,
+      cost: costo > 0 ? costo : undefined,
       trackStock: productForm.trackStock,
-      stock: productForm.trackStock ? parseInt(productForm.stock) : undefined,
+      stock: productForm.trackStock ? Math.max(0, parseInt(productForm.stock) || 0) : undefined,
     })
 
     setShowProductDialog(false)

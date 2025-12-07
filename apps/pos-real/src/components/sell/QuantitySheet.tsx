@@ -27,8 +27,14 @@ export function QuantitySheet({ open, product, onConfirm, onClose }: QuantityShe
   const total = numValue * product.price
   const isPorPeso = product.unit === 'kg' || product.unit === 'lt'
 
+  // Validacion de stock
+  const hasStockControl = product.trackStock
+  const availableStock = product.stock || 0
+  const stockInsuficiente = hasStockControl && numValue > availableStock
+  const sinStock = hasStockControl && availableStock <= 0
+
   const handleConfirm = () => {
-    if (numValue > 0) {
+    if (numValue > 0 && !stockInsuficiente && !sinStock) {
       onConfirm(numValue)
       setValue('')
     }
@@ -131,12 +137,41 @@ export function QuantitySheet({ open, product, onConfirm, onClose }: QuantityShe
               ))}
             </div>
 
+            {/* Stock Warning */}
+            {hasStockControl && (
+              <div className={`rounded-xl p-3 text-center ${
+                sinStock
+                  ? 'bg-red-50 border border-red-200'
+                  : stockInsuficiente
+                  ? 'bg-amber-50 border border-amber-200'
+                  : 'bg-gray-50 border border-gray-200'
+              }`}>
+                <p className={`text-sm font-medium ${
+                  sinStock ? 'text-red-600' : stockInsuficiente ? 'text-amber-600' : 'text-gray-600'
+                }`}>
+                  {sinStock
+                    ? `Sin stock disponible`
+                    : stockInsuficiente
+                    ? `Stock insuficiente (disponible: ${availableStock})`
+                    : `Stock disponible: ${availableStock}`}
+                </p>
+              </div>
+            )}
+
             {/* Total Display */}
-            <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-4 text-center">
-              <p className="text-xs text-green-600 font-semibold uppercase tracking-wider">
+            <div className={`border-2 rounded-2xl p-4 text-center ${
+              sinStock || stockInsuficiente
+                ? 'bg-gray-50 border-gray-200'
+                : 'bg-green-50 border-green-200'
+            }`}>
+              <p className={`text-xs font-semibold uppercase tracking-wider ${
+                sinStock || stockInsuficiente ? 'text-gray-400' : 'text-green-600'
+              }`}>
                 Total a Pagar
               </p>
-              <p className="text-4xl font-bold text-green-600">
+              <p className={`text-4xl font-bold ${
+                sinStock || stockInsuficiente ? 'text-gray-400' : 'text-green-600'
+              }`}>
                 ${total.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
               </p>
             </div>
@@ -151,14 +186,20 @@ export function QuantitySheet({ open, product, onConfirm, onClose }: QuantityShe
               </button>
               <button
                 onClick={handleConfirm}
-                disabled={numValue <= 0}
+                disabled={numValue <= 0 || sinStock || stockInsuficiente}
                 className={`flex-[2] py-4 rounded-2xl font-bold text-lg ${
-                  numValue > 0
+                  numValue > 0 && !sinStock && !stockInsuficiente
                     ? 'bg-green-600 text-white'
                     : 'bg-gray-200 text-gray-400'
                 }`}
               >
-                {numValue > 0 ? 'Agregar al Carrito' : 'Ingresá un valor'}
+                {sinStock
+                  ? 'Sin stock'
+                  : stockInsuficiente
+                  ? 'Stock insuficiente'
+                  : numValue > 0
+                  ? 'Agregar al Carrito'
+                  : 'Ingresa un valor'}
               </button>
             </div>
           </div>
