@@ -17,6 +17,16 @@ interface CartSheetProps {
 export function CartSheet({ items, total, onRemoveItem, onEditItem, onCheckout, onClear }: CartSheetProps) {
   const [isOpen, setIsOpen] = useState(false)
 
+  // Confirmación antes de vaciar carrito
+  const handleClear = () => {
+    const confirmado = window.confirm(
+      `¿Vaciar carrito?\n\nSe eliminarán ${items.length} producto${items.length === 1 ? '' : 's'} (total $${total.toLocaleString('es-AR')}).\n\nEsta acción no se puede deshacer.`
+    )
+    if (confirmado) {
+      onClear()
+    }
+  }
+
   return (
     <Drawer.Root open={isOpen} onOpenChange={setIsOpen} modal={false}>
       {/* Trigger - Barra minimizada */}
@@ -77,7 +87,7 @@ export function CartSheet({ items, total, onRemoveItem, onEditItem, onCheckout, 
             </div>
             {items.length > 0 && (
               <button
-                onClick={onClear}
+                onClick={handleClear}
                 className="flex items-center gap-1 text-red-500 text-sm font-medium"
               >
                 <Trash2 className="h-4 w-4" />

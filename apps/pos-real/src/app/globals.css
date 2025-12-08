@@ -29,3 +29,75 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* =========================================================
+   Touch Target Improvements para usuarios 40-70 años
+   Target: Android gama baja, dedos gruesos, pantallas rotas
+   Mínimo 48x48px como recomienda Google Material Design
+   ========================================================= */
+@layer components {
+  /* Botones táctiles - mínimo 48x48px */
+  .btn-touch,
+  button:not(.btn-sm),
+  [role="button"]:not(.btn-sm) {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Inputs más grandes para dedos gruesos */
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    min-height: 48px;
+    font-size: 16px; /* Evita zoom automático en iOS */
+    padding: 12px 16px;
+  }
+
+  /* Checkboxes y radios más grandes */
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  /* Espaciado entre elementos tocables */
+  .touch-spacing > * + * {
+    margin-top: 12px;
+  }
+
+  /* Links y elementos clicables */
+  a:not(.inline-link),
+  .clickable {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Botones de acción flotantes (FAB) */
+  .fab {
+    min-width: 56px;
+    min-height: 56px;
+    border-radius: 28px;
+  }
+}
+
+/* Mejoras de accesibilidad para usuarios mayores */
+@layer utilities {
+  /* Texto legible - mínimo 16px base */
+  .text-readable {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  /* Alto contraste para visibilidad */
+  .high-contrast {
+    color: #1a1a1a;
+    background-color: #ffffff;
+  }
+
+  /* Focus visible mejorado */
+  .focus-visible-enhanced:focus-visible {
+    outline: 3px solid #f59e0b;
+    outline-offset: 2px;
+  }
+}

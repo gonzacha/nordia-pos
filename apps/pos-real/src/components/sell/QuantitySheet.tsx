@@ -3,13 +3,38 @@ import { useState, useEffect } from 'react'
 import { Drawer } from 'vaul'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import { Product } from '@/lib/productsStore'
-import { Scale, Package, X } from 'lucide-react'
+import { Scale, Package, X, AlertTriangle } from 'lucide-react'
+
+// Límites máximos para evitar errores de tipeo
+const MAX_QUANTITY_KG = 100
+const MAX_QUANTITY_UNITS = 50
 
 interface QuantitySheetProps {
   open: boolean
   product: Product | null
   onConfirm: (quantity: number) => void
   onClose: () => void
+}
+
+// Normaliza input decimal: acepta tanto "1.5" como "1,5"
+function normalizeDecimalInput(value: string): string {
+  return value.replace(',', '.')
+}
+
+// Valida cantidad máxima y retorna warning si es muy alta
+function validateQuantity(quantity: number, unit: string): { valid: boolean; warning?: string } {
+  if (quantity <= 0) return { valid: false }
+
+  const isPorPeso = unit === 'kg' || unit === 'lt'
+  const max = isPorPeso ? MAX_QUANTITY_KG : MAX_QUANTITY_UNITS
+
+  if (quantity > max) {
+    return {
+      valid: true, // Permite pero advierte
+      warning: `⚠️ ¿Seguro? ${quantity} ${isPorPeso ? unit : 'unidades'} es mucho`
+    }
+  }
+  return { valid: true }
 }
 
 export function QuantitySheet({ open, product, onConfirm, onClose }: QuantitySheetProps) {
@@ -23,7 +48,8 @@ export function QuantitySheet({ open, product, onConfirm, onClose }: QuantityShe
 
   if (!product) return null
 
-  const numValue = parseFloat(value) || 0
+  // Parsear valor con soporte para coma decimal
+  const numValue = parseFloat(normalizeDecimalInput(value)) || 0
   const total = numValue * product.price
   const isPorPeso = product.unit === 'kg' || product.unit === 'lt'
 
@@ -32,6 +58,10 @@ export function QuantitySheet({ open, product, onConfirm, onClose }: QuantityShe
   const availableStock = product.stock || 0
   const stockInsuficiente = hasStockControl && numValue > availableStock
   const sinStock = hasStockControl && availableStock <= 0
+
+  // Validacion de cantidad máxima (warning, no bloquea)
+  const quantityValidation = validateQuantity(numValue, product.unit)
+  const cantidadMuyAlta = numValue > 0 && quantityValidation.warning
 
   const handleConfirm = () => {
     if (numValue > 0 && !stockInsuficiente && !sinStock) {
@@ -154,6 +184,16 @@ export function QuantitySheet({ open, product, onConfirm, onClose }: QuantityShe
                     : stockInsuficiente
                     ? `Stock insuficiente (disponible: ${availableStock})`
                     : `Stock disponible: ${availableStock}`}
+                </p>
+              </div>
+            )}
+
+            {/* Cantidad muy alta Warning (permite continuar) */}
+            {cantidadMuyAlta && !sinStock && !stockInsuficiente && (
+              <div className="rounded-xl p-3 bg-yellow-50 border border-yellow-300 flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
+                <p className="text-sm font-medium text-yellow-700">
+                  {quantityValidation.warning}
                 </p>
               </div>
             )}

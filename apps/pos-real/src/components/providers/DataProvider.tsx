@@ -10,11 +10,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const { fetchProducts } = useProductsStore()
   const { fetchMovements } = useStockStore()
 
-  // Limpiar cache viejo al iniciar (ahora todo viene de Supabase)
+  // Limpiar cache viejo de stock (ahora viene de Supabase)
+  // NOTA: NO eliminamos nordia-pos-storage porque contiene el carrito
+  // Si se corta la luz durante una venta, al volver el carrito sigue ahí
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('nordia-stock')
-      localStorage.removeItem('nordia-pos-storage')
+      // NO borrar 'nordia-pos-storage' - preserva el carrito ante cortes de luz
     }
   }, [])
 

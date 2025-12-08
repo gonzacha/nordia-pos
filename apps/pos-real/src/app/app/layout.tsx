@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/authStore"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { DataProvider } from "@/components/providers/DataProvider"
+import { ConnectionStatus } from "@/components/ConnectionStatus"
 import { Button } from "@nordia/ui"
 import { Home, ShoppingCart, Package, Warehouse, Settings, LogOut } from "lucide-react"
 
@@ -54,6 +55,9 @@ export default function AppLayout({
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-slate-50">
+        {/* Indicador de conexión offline/online */}
+        <ConnectionStatus />
+
         {/* Top bar */}
         <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
           <div className="px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">

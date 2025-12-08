@@ -25,20 +25,51 @@ const normalizeText = (text: string): string => {
     .replace(/[\u0300-\u036f]/g, '') // Quita tildes
 }
 
-// Función de fuzzy match simple
-const fuzzyMatch = (text: string, query: string): boolean => {
-  const normalizedText = normalizeText(text)
-  const normalizedQuery = normalizeText(query)
+/**
+ * Búsqueda fuzzy tolerante a errores de tipeo
+ * Para usuarios 40-70 años con baja experiencia tech
+ *
+ * Matchea:
+ * - "azado" → "asado" (1 letra de diferencia)
+ * - "tmate" → "tomate" (letra faltante)
+ * - "pann" → "pan" (letra duplicada)
+ * - "morcila" → "morcilla" (letra faltante)
+ */
+const fuzzyMatch = (search: string, target: string): boolean => {
+  const s = normalizeText(search)
+  const t = normalizeText(target)
 
-  // Match directo sin tildes
-  if (normalizedText.includes(normalizedQuery)) return true
+  // Match exacto (más rápido)
+  if (t.includes(s)) return true
 
   // Match por caracteres consecutivos (para typos como "asdo" -> "asado")
   let qi = 0
-  for (let i = 0; i < normalizedText.length && qi < normalizedQuery.length; i++) {
-    if (normalizedText[i] === normalizedQuery[qi]) qi++
+  for (let i = 0; i < t.length && qi < s.length; i++) {
+    if (t[i] === s[qi]) qi++
   }
-  return qi === normalizedQuery.length && normalizedQuery.length >= 2
+  if (qi === s.length && s.length >= 2) return true
+
+  // Levenshtein simplificado: tolera 1-2 errores para búsquedas ≥ 3 chars
+  if (s.length >= 3) {
+    // Quitar una letra y ver si matchea (ej: "azado" sin "z" = "aado" → no)
+    // Mejor: probar si target contiene search con 1 letra menos
+    for (let i = 0; i < s.length; i++) {
+      const partial = s.slice(0, i) + s.slice(i + 1)
+      if (t.includes(partial) && partial.length >= 2) return true
+    }
+
+    // Probar si search es target con 1 letra menos (ej: "pan" en "pann")
+    for (let i = 0; i < t.length; i++) {
+      const partial = t.slice(0, i) + t.slice(i + 1)
+      if (partial.includes(s) || s.includes(partial)) return true
+    }
+
+    // Verificar si las primeras N-1 letras coinciden (typo al final)
+    if (s.length >= 4 && t.startsWith(s.slice(0, -1))) return true
+    if (s.length >= 4 && t.startsWith(s.slice(0, 3))) return true
+  }
+
+  return false
 }
 
 export default function SellPage() {

@@ -7,9 +7,19 @@ import { Plus, Edit, Trash2, Package, Download } from "lucide-react"
 import { ExportPLU } from "@/components/products/ExportPLU"
 
 export default function ProductsPage() {
-  const { products, categories, addProduct } = useAppStore()
+  const { products, categories, addProduct, deleteProduct } = useAppStore()
   const [showProductDialog, setShowProductDialog] = useState(false)
   const [showExportModal, setShowExportModal] = useState(false)
+
+  // Confirmar eliminación de producto
+  const handleDeleteProduct = (productId: string, productName: string) => {
+    const confirmado = window.confirm(
+      `¿Eliminar "${productName}"?\n\nEsta acción no se puede deshacer.`
+    )
+    if (confirmado) {
+      deleteProduct(productId)
+    }
+  }
   const [productForm, setProductForm] = useState({
     name: "",
     category: categories[0] || "General",
@@ -172,7 +182,12 @@ export default function ProductsPage() {
                         <Button size="sm" variant="outline">
                           <Edit className="w-3 h-3" />
                         </Button>
-                        <Button size="sm" variant="outline">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDeleteProduct(product.id, product.name)}
+                          className="hover:bg-red-50 hover:border-red-200 hover:text-red-600"
+                        >
                           <Trash2 className="w-3 h-3" />
                         </Button>
                       </div>
