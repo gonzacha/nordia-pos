@@ -17,19 +17,21 @@ interface UserRow {
   stores: {
     id: string
     name: string
+    slug: string | null
     type: string
   } | null
 }
 
 interface AuthStore extends AuthState {
   // Actions
-  login: (pin: string) => Promise<boolean>
+  login: (pin: string, storeId?: string) => Promise<boolean>
   logout: () => void
   checkPermission: (permission: Permission) => boolean
 
   // Store info
   storeId: string | null
   storeName: string | null
+  storeSlug: string | null
 
   // Setters
   setUser: (user: User | null) => void
@@ -47,9 +49,12 @@ export const useAuthStore = create<AuthStore>()(
       error: null,
       storeId: null,
       storeName: null,
+      storeSlug: null,
 
       // Login con PIN usando Supabase
-      login: async (pin: string) => {
+      // Si se pasa storeId, filtra por tienda (nuevo flujo por slug)
+      // Si no, busca globalmente (compatibilidad con flujo viejo)
+      login: async (pin: string, storeId?: string) => {
         // Validar que el PIN tenga exactamente 4 digitos
         if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
           set({
@@ -63,19 +68,42 @@ export const useAuthStore = create<AuthStore>()(
 
         set({ isLoading: true, error: null })
 
+        // Limpiar PIN (por si hay espacios o caracteres raros)
+        const cleanPin = String(pin).trim()
+
         try {
-          // Buscar usuario por PIN en Supabase
-          const { data: userData, error: userError } = await supabase
+          // Construir query base
+          let query = supabase
             .from('users')
             .select(`
               *,
-              stores (id, name, type)
+              stores (id, name, slug, type)
             `)
-            .eq('pin', pin)
+            .eq('pin', cleanPin)
             .eq('active', true)
-            .single()
 
-          if (userError || !userData) {
+          // Si se especifica storeId, filtrar por tienda (evita duplicados)
+          if (storeId) {
+            query = query.eq('store_id', storeId)
+          }
+
+          const { data: userData, error: userError } = await query.single()
+
+          if (userError) {
+            // PGRST116 = no se encontró registro o hay múltiples
+            const errorMsg = userError.code === 'PGRST116'
+              ? 'PIN incorrecto'
+              : 'Error de conexión'
+            set({
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: errorMsg
+            })
+            return false
+          }
+
+          if (!userData) {
             set({
               user: null,
               isAuthenticated: false,
@@ -110,6 +138,7 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
             storeId: storeData?.id || null,
             storeName: storeData?.name || null,
+            storeSlug: storeData?.slug || null,
           })
           return true
 
@@ -133,6 +162,7 @@ export const useAuthStore = create<AuthStore>()(
           error: null,
           storeId: null,
           storeName: null,
+          storeSlug: null,
         })
       },
 
@@ -156,6 +186,7 @@ export const useAuthStore = create<AuthStore>()(
         isAuthenticated: state.isAuthenticated,
         storeId: state.storeId,
         storeName: state.storeName,
+        storeSlug: state.storeSlug,
       }),
     }
   )

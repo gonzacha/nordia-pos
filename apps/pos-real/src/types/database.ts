@@ -13,6 +13,7 @@ export interface Database {
         Row: {
           id: string
           name: string
+          slug: string | null
           type: string | null
           address: string | null
           phone: string | null
@@ -22,6 +23,7 @@ export interface Database {
         Insert: {
           id?: string
           name: string
+          slug?: string | null
           type?: string | null
           address?: string | null
           phone?: string | null
@@ -31,6 +33,7 @@ export interface Database {
         Update: {
           id?: string
           name?: string
+          slug?: string | null
           type?: string | null
           address?: string | null
           phone?: string | null

@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { useAuthStore } from '@/lib/authStore'
 import { Permission } from '@/types/auth'
 import { Store, Loader2 } from 'lucide-react'
@@ -12,24 +12,35 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, requiredPermission }: ProtectedRouteProps) {
   const router = useRouter()
-  const { isAuthenticated, checkPermission, isLoading } = useAuthStore()
+  const params = useParams()
+  const slug = params?.slug as string | undefined
+
+  const { isAuthenticated, checkPermission, isLoading, storeSlug } = useAuthStore()
   const [isChecking, setIsChecking] = useState(true)
 
   useEffect(() => {
     // Small delay to allow hydration
     const timer = setTimeout(() => {
       if (!isAuthenticated) {
-        router.replace('/login')
+        // Redirigir al login de la tienda si hay slug, o al login global
+        if (slug) {
+          router.replace(`/${slug}`)
+        } else if (storeSlug) {
+          router.replace(`/${storeSlug}`)
+        } else {
+          router.replace('/login')
+        }
       } else if (requiredPermission && !checkPermission(requiredPermission)) {
         // User doesn't have permission - redirect to sell (base permission)
-        router.replace('/app/sell')
+        const basePath = slug ? `/${slug}/app` : '/app'
+        router.replace(`${basePath}/sell`)
       } else {
         setIsChecking(false)
       }
     }, 100)
 
     return () => clearTimeout(timer)
-  }, [isAuthenticated, requiredPermission, checkPermission, router])
+  }, [isAuthenticated, requiredPermission, checkPermission, router, slug, storeSlug])
 
   // Show loading while checking auth
   if (isChecking || isLoading) {

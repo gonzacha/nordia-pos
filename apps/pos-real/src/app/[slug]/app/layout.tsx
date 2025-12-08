@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter, useParams } from "next/navigation"
 import { useAuthStore } from "@/lib/authStore"
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute"
 import { DataProvider } from "@/components/providers/DataProvider"
@@ -16,25 +16,27 @@ export default function AppLayout({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, logout, checkPermission, storeName, storeSlug } = useAuthStore()
+  const params = useParams()
+  const slug = params.slug as string
+
+  const { user, logout, checkPermission, storeName } = useAuthStore()
   const canAccessSettings = checkPermission('settings')
   const canManageStock = checkPermission('manage_stock')
 
   const handleLogout = () => {
     logout()
-    // Redirigir al login de la tienda si hay slug, o al login global
-    if (storeSlug) {
-      router.push(`/${storeSlug}`)
-    } else {
-      router.push('/login')
-    }
+    // Redirigir al login de la tienda
+    router.push(`/${slug}`)
   }
+
+  // Base path para esta tienda
+  const basePath = `/${slug}/app`
 
   // Base navigation items
   const baseNavigation = [
-    { name: "Inicio", href: "/app", icon: Home },
-    { name: "Vender", href: "/app/sell", icon: ShoppingCart },
-    { name: "Productos", href: "/app/products", icon: Package },
+    { name: "Inicio", href: basePath, icon: Home },
+    { name: "Vender", href: `${basePath}/sell`, icon: ShoppingCart },
+    { name: "Productos", href: `${basePath}/products`, icon: Package },
   ]
 
   // Build navigation based on permissions
@@ -42,17 +44,17 @@ export default function AppLayout({
 
   // Add Stock if user has permission
   if (canManageStock) {
-    navigation.push({ name: "Stock", href: "/app/stock", icon: Warehouse })
+    navigation.push({ name: "Stock", href: `${basePath}/stock`, icon: Warehouse })
   }
 
   // Add settings only if user has permission
   if (canAccessSettings) {
-    navigation.push({ name: "Configuración", href: "/app/settings", icon: Settings })
+    navigation.push({ name: "Configuración", href: `${basePath}/settings`, icon: Settings })
   }
 
   const isActive = (href: string) => {
-    if (href === "/app") {
-      return pathname === "/app"
+    if (href === basePath) {
+      return pathname === basePath
     }
     return pathname.startsWith(href)
   }
